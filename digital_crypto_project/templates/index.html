@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classical Ciphers & Symmetric Key Cryptography | Interactive System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Top Navigation -->
+    <header class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="shield-icon">&#x1F6E1;</span>
+                <span class="logo-title">CRYPTO<span class="accent-text">LAB</span></span>
+            </div>
+            <nav class="nav-links">
+                <a href="#workspace" class="nav-item active">Interactive Workspace</a>
+                <a href="#cipher-insights" class="nav-item">Cipher Insights</a>
+                <a href="#comparison" class="nav-item">Comparison Matrix</a>
+                <a href="#security-notes" class="nav-item">Security Principles</a>
+            </nav>
+            <div class="status-indicator">
+                <span class="pulse-dot"></span>
+                <span class="status-label">System Active &bull; AES-256-GCM Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="main-container">
+        
+        <!-- Hero Section -->
+        <section class="hero-section">
+            <div class="badge">ACADEMIC CYBERSECURITY PROJECT</div>
+            <h1 class="hero-title">Classical Ciphers &amp; Symmetric Key Cryptography</h1>
+            <p class="hero-subtitle">
+                An interactive exploration bridging historical ciphers (Caesar, Monoalphabetic Substitution, Vigen&egrave;re, Rail Fence) 
+                and modern state-of-the-art authenticated symmetric encryption (<span class="highlight">AES-256-GCM</span>).
+            </p>
+            <div class="tech-pills">
+                <span class="pill">Python Flask</span>
+                <span class="pill">AES-256-GCM (AEAD)</span>
+                <span class="pill">Fresh 96-bit Nonces</span>
+                <span class="pill">Tamper Detection</span>
+                <span class="pill">Transposition &amp; Substitution</span>
+            </div>
+        </section>
+
+        <!-- Workspace Section -->
+        <section id="workspace" class="workspace-section">
+            <div class="card workspace-card">
+                <div class="card-header">
+                    <h2><span class="icon">&#x2699;</span> Cryptographic Operations Center</h2>
+                    <div class="card-actions">
+                        <button id="btn-sample-msg" class="btn-sm btn-ghost" title="Load sample message">
+                            &#x1F4DD; Load Sample
+                        </button>
+                        <button id="btn-clear-all" class="btn-sm btn-ghost" title="Clear inputs and outputs">
+                            &#x1F5D1; Clear
+                        </button>
+                    </div>
+                </div>
+
+                <div class="workspace-grid">
+                    <!-- Left: Configuration & Input -->
+                    <div class="control-column">
+                        <!-- Cipher Selection -->
+                        <div class="form-group">
+                            <label for="cipher-select" class="form-label">
+                                <strong>1. Select Encryption Algorithm</strong>
+                            </label>
+                            <select id="cipher-select" class="form-control select-control">
+                                <optgroup label="Modern Authenticated Symmetric Cryptography">
+                                    <option value="aes_gcm" selected>AES-256-GCM (Galois/Counter Mode - Recommended)</option>
+                                </optgroup>
+                                <optgroup label="Classical Substitution Ciphers">
+                                    <option value="caesar">Caesar Cipher (Shift Substitution)</option>
+                                    <option value="substitution">Monoalphabetic Substitution (Permutation)</option>
+                                    <option value="vigenere">Vigen&egrave;re Cipher (Polyalphabetic)</option>
+                                </optgroup>
+                                <optgroup label="Classical Transposition Ciphers">
+                                    <option value="rail_fence">Rail Fence Cipher (Zigzag Transposition)</option>
+                                </optgroup>
+                            </select>
+                        </div>
+
+                        <!-- Dynamic Key Field -->
+                        <div class="form-group key-group">
+                            <div class="label-with-action">
+                                <label for="cipher-key" class="form-label" id="key-label">
+                                    <strong>2. Encryption Key</strong>
+                                </label>
+                                <button type="button" id="btn-generate-key" class="btn-text">
+                                    &#x26A1; Generate Secure Key
+                                </button>
+                            </div>
+                            <div class="input-with-button">
+                                <input type="text" id="cipher-key" class="form-control code-font" placeholder="64-character hexadecimal key (256 bits)" autocomplete="off" spellcheck="false">
+                            </div>
+                            <small id="key-hint" class="helper-text">
+                                Requires 64 hex characters (32 bytes = 256-bit key). Click "Generate Secure Key" to generate a cryptographic key.
+                            </small>
+                        </div>
+
+                        <!-- Input Text Area -->
+                        <div class="form-group">
+                            <div class="label-with-action">
+                                <label for="input-text" class="form-label">
+                                    <strong>3. Message Input</strong>
+                                </label>
+                                <span id="char-count" class="char-counter">0 chars</span>
+                            </div>
+                            <textarea id="input-text" class="form-control text-area" rows="5" placeholder="Enter plaintext to encrypt or ciphertext to decrypt..."></textarea>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="action-buttons">
+                            <button id="btn-encrypt" class="btn btn-primary">
+                                <span class="btn-icon">&#x1F512;</span> Encrypt Message
+                            </button>
+                            <button id="btn-decrypt" class="btn btn-secondary">
+                                <span class="btn-icon">&#x1F513;</span> Decrypt Ciphertext
+                            </button>
+                            <button id="btn-swap" class="btn btn-outline" title="Copy output into input for quick reverse testing">
+                                &#x21C5; Swap In/Out
+                            </button>
+                        </div>
+
+                        <!-- Notification / Alert Box -->
+                        <div id="status-box" class="status-box hidden">
+                            <div class="status-message" id="status-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Output & Metadata Inspector -->
+                    <div class="output-column">
+                        <div class="output-card">
+                            <div class="output-header">
+                                <label class="form-label">
+                                    <strong>Operation Result</strong>
+                                    <span id="output-badge" class="badge-mini badge-idle">Awaiting Input</span>
+                                </label>
+                                <button id="btn-copy" class="btn-sm btn-copy" title="Copy output to clipboard">
+                                    &#x1F4CB; Copy Result
+                                </button>
+                            </div>
+
+                            <div class="output-container">
+                                <textarea id="output-text" class="form-control text-area output-area code-font" rows="8" readonly placeholder="Encrypted or decrypted output will appear here..."></textarea>
+                            </div>
+
+                            <!-- AES-256-GCM Deep Inspection Panel -->
+                            <div id="aes-inspector" class="inspector-panel hidden">
+                                <h4 class="inspector-title">&#x1F50D; AES-256-GCM Cryptographic Metadata</h4>
+                                <div class="inspector-grid">
+                                    <div class="meta-item">
+                                        <span class="meta-label">96-bit Nonce (IV):</span>
+                                        <code id="meta-nonce" class="meta-value">-</code>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">128-bit Auth Tag:</span>
+                                        <code id="meta-tag" class="meta-value">-</code>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="meta-label">Raw Ciphertext (Hex):</span>
+                                        <code id="meta-raw" class="meta-value">-</code>
+                                    </div>
+                                    <div class="meta-item full-width">
+                                        <span class="meta-label">Integrity Status:</span>
+                                        <span id="meta-integrity" class="meta-value text-success">
+                                            &#x2714; Authenticated Encryption with Associated Data (AEAD) Active
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dynamic Cipher Insight Card -->
+        <section id="cipher-insights" class="info-section">
+            <div class="card detail-card">
+                <div class="card-header">
+                    <h2><span class="icon">&#x1F4A1;</span> Selected Cipher Profile &amp; Cryptanalysis</h2>
+                    <span id="cipher-type-badge" class="badge-tag">Modern Authenticated</span>
+                </div>
+                <div class="detail-content">
+                    <h3 id="detail-name">AES-256-GCM (Galois/Counter Mode)</h3>
+                    <p id="detail-desc" class="detail-description">
+                        Industry-grade Galois/Counter Mode providing high-speed authenticated encryption with mathematical confidentiality, integrity, and authenticity verification.
+                    </p>
+                    <div class="insights-grid">
+                        <div class="insight-box">
+                            <h4>&#x1F511; Key Structure</h4>
+                            <p id="detail-key-method">256-bit Cryptographic Key (64 Hex chars)</p>
+                        </div>
+                        <div class="insight-box">
+                            <h4>&#x1F3AF; Primary Purpose</h4>
+                            <p id="detail-purpose">Global standard for securing confidential data in TLS 1.3, VPNs, banking, cloud storage, and disk encryption</p>
+                        </div>
+                        <div class="insight-box alert-box">
+                            <h4>&#x26A0; Known Vulnerability / Limitation</h4>
+                            <p id="detail-limitations">Symmetric key must be securely exchanged beforehand; critical that the 96-bit Nonce is NEVER reused with the same key.</p>
+                        </div>
+                        <div class="insight-box" id="detail-suitability-box">
+                            <h4>&#x1F6E1; Safe for Sensitive Data Today?</h4>
+                            <p id="detail-suitability" class="text-success font-bold">&#x2714; YES &mdash; Production Ready</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Feature 4: Algorithm Comparison Table -->
+        <section id="comparison" class="comparison-section">
+            <div class="section-heading">
+                <h2>Cryptographic Algorithm Comparison Matrix</h2>
+                <p>Comprehensive side-by-side technical evaluation of classical ciphers versus modern symmetric encryption.</p>
+            </div>
+
+            <div class="table-card">
+                <div class="table-responsive">
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Algorithm Name</th>
+                                <th>Encryption Type</th>
+                                <th>Key Method</th>
+                                <th>Main Purpose</th>
+                                <th>Security Limitations</th>
+                                <th>Suitable for Sensitive Data Today?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="font-bold">Caesar Cipher</td>
+                                <td><span class="tag tag-classical">Classical Substitution</span></td>
+                                <td>Single Integer Shift (0&ndash;25)</td>
+                                <td>Historical battlefield messages (~100 BC)</td>
+                                <td>Trivial key space of only 25 shifts; broken in milliseconds by brute force or frequency analysis.</td>
+                                <td><span class="badge-pill badge-danger">&#x2716; NO (Insecure)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Monoalphabetic Substitution</td>
+                                <td><span class="tag tag-classical">Classical Substitution</span></td>
+                                <td>26-Letter Permutation Alphabet</td>
+                                <td>Diplomatic correspondence</td>
+                                <td>Preserves natural language letter frequencies; vulnerable to statistical cryptanalysis.</td>
+                                <td><span class="badge-pill badge-danger">&#x2716; NO (Insecure)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Vigen&egrave;re Cipher</td>
+                                <td><span class="tag tag-classical">Polyalphabetic Substitution</span></td>
+                                <td>Repeating Keyword String</td>
+                                <td>16th&ndash;19th century state secrets</td>
+                                <td>Vulnerable to Kasiski examination and Friedman test to deduce key length, then solved as parallel Caesar ciphers.</td>
+                                <td><span class="badge-pill badge-danger">&#x2716; NO (Insecure)</span></td>
+                            </tr>
+                            <tr>
+                                <td class="font-bold">Rail Fence Cipher</td>
+                                <td><span class="tag tag-classical">Transposition Cipher</span></td>
+                                <td>Rail Count Depth (Integer &ge; 2)</td>
+                                <td>Telegraphic &amp; tactical military field notes</td>
+                                <td>Does not alter characters; preserves exact unigram/bigram letter counts. Small rail counts easily reconstructed.</td>
+                                <td><span class="badge-pill badge-danger">&#x2716; NO (Insecure)</span></td>
+                            </tr>
+                            <tr class="highlight-row">
+                                <td class="font-bold text-accent">AES-256-GCM</td>
+                                <td><span class="tag tag-modern">Modern Authenticated AEAD</span></td>
+                                <td>256-bit Cryptographic Key + 96-bit Random Nonce</td>
+                                <td>Global security standard for TLS 1.3, HTTPS, SSH, VPNs, banking, cloud storage</td>
+                                <td>Key must be securely distributed; Nonce must NEVER be reused with the same key. Resistant to all known practical attacks.</td>
+                                <td><span class="badge-pill badge-success">&#x2714; YES (Standard)</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Critical Educational Warning Callout -->
+                <div class="warning-callout">
+                    <div class="callout-icon">&#x26A0;&#xFE0F;</div>
+                    <div class="callout-text">
+                        <strong>Educational Technique Notice:</strong> Classical ciphers (Caesar, Substitution, Vigen&egrave;re, Rail Fence) 
+                        serve exclusively as pedagogical tools to learn the foundations of cryptology. They must <strong>never</strong> be used 
+                        to protect confidential real-world information. Modern applications require authenticated symmetric primitives like 
+                        <strong>AES-256-GCM</strong>, which guarantee both mathematical confidentiality and cryptographic integrity verification.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Security Principles & Viva Highlights -->
+        <section id="security-notes" class="principles-section">
+            <div class="section-heading">
+                <h2>Fundamental Cryptographic Principles</h2>
+                <p>Core theoretical pillars demonstrated by this interactive system.</p>
+            </div>
+
+            <div class="principles-grid">
+                <div class="principle-card">
+                    <div class="p-num">01</div>
+                    <h3>Kerckhoffs's Principle</h3>
+                    <p>
+                        A cryptographic system should remain secure even if everything about the algorithm is public knowledge. 
+                        Security must rely <em>solely</em> on keeping the key secret. Modern algorithms like AES-256 are completely open source 
+                        and public, yet mathematically unbreakable when strong random keys are used.
+                    </p>
+                </div>
+                <div class="principle-card">
+                    <div class="p-num">02</div>
+                    <h3>AEAD: Confidentiality + Integrity</h3>
+                    <p>
+                        Encryption alone (confidentiality) does not prevent an attacker from modifying or tampering with ciphertext in transit. 
+                        <strong>AES-GCM (Authenticated Encryption with Associated Data)</strong> computes a 16-byte authentication tag 
+                        that immediately exposes any unauthorized modification, bit-flip, or falsification.
+                    </p>
+                </div>
+                <div class="principle-card">
+                    <div class="p-num">03</div>
+                    <h3>Nonce Uniqueness (Never Reuse)</h3>
+                    <p>
+                        The <em>Number used ONCE</em> (Nonce / IV) ensures that encrypting identical messages multiple times yields completely 
+                        unpredictable and unique ciphertexts. In AES-GCM, reusing a Nonce with the same key catastrophically compromises 
+                        the authentication tag and can reveal plaintext information.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <p><strong>Classical Ciphers and Symmetric Key Cryptography System</strong></p>
+            <p>College Mini-Project in Cybersecurity &bull; Python, Flask, AES-256-GCM &bull; Academic Year 2026</p>
+        </div>
+    </footer>
+
+    <!-- Toast Notification Element -->
+    <div id="toast" class="toast hidden">Copied to clipboard!</div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
